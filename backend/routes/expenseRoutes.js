@@ -16,6 +16,6 @@ router.post('/addBulkExpenses', expenseController.bulkAddExpenses)
 router.patch('/updateExpense', expenseController.updateExpense)
 // DELETE Requests
 router.delete('/deleteExpense', expenseController.deleteExpense)
-router.delete('/deleteAllExpense', expenseController.deleteAllExpenses)
+router.delete('/deleteAllExpenses', expenseController.deleteAllExpenses)
 
 module.exports = router 
