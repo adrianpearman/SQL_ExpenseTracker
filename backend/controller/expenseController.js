@@ -73,17 +73,17 @@ const expenseController = {
     res.send( expensesObj )
   },
   addExpense: async (req, res) => {
-    const { UserID, Amount, Description, Day, Month, Year, Location } = req.query
+    const { userID, amount, description, day, month, year, location } = req.query
 
     try{
       await Expense.create({ 
-        userID: UserID,
-        amount: Amount,
-        location: Location,
-        description: Description,
-        day: parseInt(Day),
-        month: parseInt(Month),
-        year: parseInt(Year)
+        userID: userID,
+        amount: amount,
+        location: location,
+        description: description,
+        day: parseInt(day),
+        month: parseInt(month),
+        year: parseInt(year)
       })
       return res.send({message: "Successfully added expense"})
     }catch(err){
@@ -100,17 +100,17 @@ const expenseController = {
       }
 
       for (let i = 0; i < data.length; i++) {
-        const { UserID, Amount, Description, Day, Month, Year, Location } = data[i]
+        const { userID, amount, description, day, month, year, location } = req.query
         
         try{
           await Expense.create({ 
-            userID: UserID,
-            amount: Amount,
-            location: Location,
-            description: Description,
-            day: parseInt(Day),
-            month: parseInt(Month),
-            year: parseInt(Year)
+            userID: userID,
+            amount: amount,
+            location: location,
+            description: description,
+            day: parseInt(day),
+            month: parseInt(month),
+            year: parseInt(year)
           })
 
           counter.successCounter++
