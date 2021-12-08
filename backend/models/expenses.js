@@ -2,6 +2,8 @@
 const { DataTypes } = require('sequelize');
 // Database config
 const db = require('../database')
+// Other Models
+const Category = require('./categories')
 
 const Expense = db.define('Expense', {
     expenseID: {
@@ -36,7 +38,15 @@ const Expense = db.define('Expense', {
     year:{
         type: DataTypes.INTEGER,
         allowNull: false
-    }  
-})
+      },
+    categoryID: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Category,
+        key: 'categoryID',
+      },
+      allowNull: false
+    }, 
+})  
 
 module.exports = Expense
