@@ -39,7 +39,7 @@ const Expense = db.define('Expense', {
         type: DataTypes.INTEGER,
         allowNull: false
       },
-    categoryID: {
+    category: {
       type: DataTypes.INTEGER,
       references: {
         model: Category,

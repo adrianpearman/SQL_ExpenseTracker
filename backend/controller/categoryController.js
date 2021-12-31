@@ -36,7 +36,7 @@ const categoryController = {
         const { categoryName } = data[i]
         
         try{
-          await Category.create({ categoryName })
+          await Category.create({ categoryName: categoryName })
           counter.successCounter++
         }catch(err){
           counter.failedCounter++
@@ -49,7 +49,7 @@ const categoryController = {
       })
     }
 
-    fs.createReadStream('categoryFile.csv')
+    fs.createReadStream('./csvFiles/categoryFile.csv')
       .pipe(csv())
       .on('data', (row) => {
         categoryList.push(row)

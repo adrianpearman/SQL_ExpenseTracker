@@ -1,0 +1,174 @@
+userID,amount,location,category,description,month,day,year
+1,25.95,Loblaws,1,,11,3,2021
+1,8.85,LCBO,3,,11,7,2021
+1,94.09,Loblaws,1,,11,8,2021
+1,8.07,Shoppers Drug Mart,2,,11,11,2021
+1,49.50,Loblaws,1,,11,11,2021
+1,19.90,LCBO,3,,11,13,2021
+1,54.80,LCBO,3,,11,19,2021
+1,21.25,Shoppers Drug Mart,2,,11,25,2021
+1,7.68,Sephora,12,,11,27,2021
+1,191.77,Saje,12,,11,27,2021
+1,133.27,Nordstrom Rack,8,,11,27,2021
+1,112.59,Loblaws,1,,10,3,2021
+1,30.51,Churrasqueira Martins,5,Chicken,10,2,2021
+1,74.86,Loblaws,1,,10,7,2021
+1,23.71,Loblaws,1,,10,8,2021
+1,56.39,Uniqlo,8,,10,11,2021
+1,24.32,A&W,5,,10,13,2021
+1,13.90,Eataly,4,,10,14,2021
+1,16.23,Loblaws,1,,10,18,2021
+1,37.29,PiCo,5,,10,19,2021
+1,32.38,Loblaws,1,,10,20,2021
+1,49.99,SportChek,8,Masks,10,24,2021
+1,22.55,Loblaws,1,,10,29,2021
+1,75.94,Eataly,4,,10,29,2021
+1,152.55,Nike,8,Winter Shoes,10,31,2021
+1,259.89,Golf Town,10,,9,2,2021
+1,53.73,Loblaws,1,,9,4,2021
+1,40.00,Presto,7,Updating Bus Pass,9,11,2021
+1,64.75,Hemingways,4,Brunch,9,12,2021
+1,13.80,LCBO,3,,9,11,2021
+1,33.76,Loblaws,1,,9,13,2021
+1,40.90,LCBO,3,,9,17,2021
+1,27.67,Loblaws,1,,9,17,2021
+1,42.38,Pour House,4,,9,24,2021
+1,67.27,LCBO,3,,8,6,2021
+1,40.65,Loblaws,1,,8,7,2021
+1,16.82,Loblaws,1,,8,8,2021
+1,45.09,Shoppers Drug Mart,2,,8,9,2021
+1,62.14,Canadian Tire,6,new trolley,8,15,2021
+1,80.33,Loblaws,1,,8,17,2021
+1,100.57,Peninsula Lakes Golf Course,10,Golf,8,28,2021
+1,60.00,Saw Mill Golf Course,10,Golf,8,28,2021
+1,112.01,Uniqlo,8,,8,29,2021
+1,23.96,Shoppers Drug Mart,2,,8,31,2021
+1,106.56,Pilot Tavern,4,,7,4,2021
+1,26.94,Loblaws,1,,7,9,2021
+1,28.20,LCBO,3,,7,9,2021
+1,97.15,Ikea,12,,7,11,2021
+1,19.48,Shoppers Drug Mart,2,,7,14,2021
+1,35.05,Shoppers Drug Mart,2,,7,15,2021
+1,49.11,Canadian Tire,7,,7,15,2021
+1,57.40,Uniqlo,8,,7,23,2021
+1,97.26,Loblaws,1,,7,24,2021
+1,83.97,Copetown Golf Course,10,Golf,7,25,2021
+1,60.20,LCBO,3,,7,30,2021
+1,84.52,Uniqlo,8,,7,30,2021
+1,84.72,Winners,8,,6,25,2021
+1,26.58,Canadian Tire,6,,6,19,2021
+1,105.00,Canadian Tire,6,,6,16,2021
+1,15.16,Shoppers Drug Mart,2,,6,12,2021
+1,13.00,Pizza Del Arte,5,,6,13,2021
+1,15.33,Home Hardware,6,,6,12,2021
+1,19.95,LCBO,3,,6,12,2021
+1,16.94,Subway,5,,6,14,2021
+1,30.61,Loblaws,1,,6,5,2021
+1,15.81,Loblaws,1,,6,6,2021
+1,82.67,The Docks Driving Range,10,,6,7,2021
+1,38.71,Loblaws,1,,6,7,2021
+1,16.94,Quesada Burritos & Tacos,5,,6,4,2021
+1,42.00,The Docks Driving Range,10,,6,3,2021
+1,16.37,Subway,5,,6,2,2021
+1,46.30,Home Hardware,6,,6,29,2021
+1,60.67,The Docks Driving Range,10,,6,24,2021
+1,47.33,The Docks Driving Range,10,,6,17,2021
+1,20.48,Shoppers Drug Mart,2,,6,24,2021
+1,97.97,Copetown Golf Course,10,,6,26,2021
+1,56.48,Winners,8,,6,30,2021
+1,54.96,Loblaws,1,,6,29,2021
+1,77.97,Copetown Golf Course,10,,6,26,2021
+1,27.15,LCBO,3,,5,30,2021
+1,36.14,Shoppers Drug Mart,2,,5,29,2021
+1,16.85,LCBO,3,,5,28,2021
+1,12.72,Loblaws,1,,5,23,2021
+1,20.88,Dominos Pizza,5,,5,26,2021
+1,22.75,LCBO,3,,5,21,2021
+1,16.94,Subway,5,,5,17,2021
+1,11.63,Subway,5,,5,3,2021
+1,76.19,Loblaws,1,,5,18,2021
+1,12.42,Loblaws,1,,5,15,2021
+1,103.09,Loblaws,1,,5,4,2021
+1,56.02,Shoppers Drug Mart,2,,4,30,2021
+1,42.41,Loblaws,1,,4,30,2021
+1,23.20,LCBO,3,,4,24,2021
+1,31.08,Pizza Del Arte,5,,4,17,2021
+1,59.33,The Docks Driving Range,10,,4,12,2021
+1,112.73,Loblaws,1,,4,5,2021
+1,45.83,The Docks Driving Range,10,,4,2,2021
+1,67.79,Winners,8,,4,1,2021
+1,39.58,The Docks Driving Range,10,,3,24,2021
+1,28.24,Winners,8,,3,28,2021
+1,56.16,Loblaws,1,,3,7,2021
+1,40.74,The Docks Driving Range,10,,3,17,2021
+1,58.84,Loblaws,1,,3,18,2021
+1,66.42,Loblaws,1,,3,14,2021
+1,82.43,HomeSense,12,,3,13,2021
+1,42.92,The Docks Driving Range,10,,3,10,2021
+1,41.44,Loblaws,1,,12,9,2020
+1,31.95,LCBO,3,,12,5,2020
+1,91.64,Loblaws,1,,12,1,2020
+1,14.90,Subway,5,,12,1,2020
+1,106.53,Loblaws,1,,11,2,2020
+1,16.09,Canadian Tire,6,,11,2,2020
+1,6.71,Loblaws,1,,11,4,2020
+1,11.50,Booster Juice,5,,11,7,2020
+1,19.95,LCBO,3,,11,7,2020
+1,29.00,The Docks Driving Range,10,,11,8,2020
+1,46.65,Loblaws,1,,11,9,2020
+1,47.50,Home Depot,6,,11,14,2020
+1,111.53,Home Depot,6,,11,14,2020
+1,13.53,Metro,1,,11,14,2020
+1,153.14,Loblaws,1,,11,15,2020
+1,16.03,Loblaws,1,,11,17,2020
+1,3.39,Loblaws,1,,11,20,2020
+1,37.90,LCBO,3,,11,20,2020
+1,36.33,Loblaws,1,,11,21,2020
+1,15.09,Loblaws,1,,11,24,2020
+1,20.34,Loblaws,1,,11,27,2020
+1,20.32,Loblaws,1,,11,30,2020
+1,54.17,The Docks Driving Range,10,,11,27,2020
+1,43.61,The Docks Driving Range,10,,11,28,2020
+1,14.90,Subway,5,,10,1,2020
+1,22.35,Dominos Pizza,5,,10,5,2020
+1,40.74,The Docks Driving Range,10,,10,5,2020
+1,139.43,Loblaws,1,,10,6,2020
+1,46.00,The Docks Driving Range,10,,10,9,2020
+1,35.44,Home Depot,6,,10,10,2020
+1,58.42,HomeSense,12,,10,10,2020
+1,52.84,SportChek,8,,10,11,2020
+1,16.25,Subway,5,,10,12,2020
+1,36.37,Rexall,2,,10,15,2020
+1,265.51,Ikea,12,,10,17,2020
+1,16.94,Subway,5,,10,19,2020
+1,22.29,Dominos Pizza,5,,10,20,2020
+1,78.06,Willow Valley Golf Course,10,Golf,10,12,2020
+1,66.11,Metro,1,,10,23,2020
+1,158.13,Nordstrom Rack,8,,10,24,2020
+1,314.14,Hidden Lake Golf Club,10,,10,25,2020
+1,11.85,Subway,5,,10,29,2020
+1,21.31,Loblaws,1,,10,29,2020
+1,12.41,Dominos Pizza,5,,10,29,2020
+1,23.71,Shoppers Drug Mart,2,,9,5,2020
+1,194.27,Winners,8,,9,5,2020
+1,135.58,Kitchen Stuff Plus,12,,9,5,2020
+1,251.85,Hudsons Bay,8,,9,5,2020
+1,84.43,SportChek,8,,9,5,2020
+1,66.74,The Docks Driving Range,10,,9,10,2020
+1,97.46,Fox & Fiddle,4,,9,11,2020
+1,22.59,Canadian Tire,6,,9,12,2020
+1,56.48,Winners,8,,9,12,2020
+1,112.98,Marshalls,8,,9,12,2020
+1,19.03,Loblaws,1,,9,14,2020
+1,54.00,The Docks Driving Range,10,,9,16,2020
+1,207.87,Marshalls,8,,9,17,2020
+1,101.34,Constantine,4,,9,19,2020
+1,111.46,Loblaws,1,,9,21,2020
+1,50.83,Best Buy,12,,9,24,2020
+1,47.98,Canadian Tire,6,,9,24,2020
+1,56.00,The Docks Driving Range,10,,9,24,2020
+1,43.21,The Stable,4,,9,26,2020
+1,37.29,Central Bierhaus,4,,9,27,2020
+1,132.50,Loblaws,1,,8,17,2020
+1,71.30,The Docks Driving Range,10,,8,30,2020
+1,294.62,Best Buy,12,,4,16,2018

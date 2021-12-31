@@ -9,9 +9,12 @@ router.get('/', expenseController.getAllExpenses)
 router.get('/getExpense', expenseController.getExpense)
 router.get('/getExpensePerMonth', expenseController.getExpensePerMonth)
 router.get('/getExpensePerYear', expenseController.getExpensePerYear)
+router.get('/getExpensesPerCategory', expenseController.getExpensesPerCategory)
+router.get('/getExpensesPerLocation', expenseController.getExpensePerLocation)
+router.get('/getLocations', expenseController.getAllLocations)
 // POST Requests
 router.post('/addExpense', expenseController.addExpense)
-router.post('/addBulkExpenses', expenseController.bulkAddExpenses)
+router.post('/bulkAddExpenses', expenseController.bulkAddExpenses)
 // UPDATE Requests
 router.patch('/updateExpense', expenseController.updateExpense)
 // DELETE Requests
