@@ -143,7 +143,6 @@ const expenseController = {
   },
   addExpense: async (req, res) => {
     const { userID, amount, description, day, month, year, location } = req.query
-
     try{
       await Expense.create({ 
         userID: userID,
@@ -161,14 +160,12 @@ const expenseController = {
   },
   bulkAddExpenses: async(req, res) => {
     const expenseList = []
-
     const insertExpenseToDB = async (data) => {
       let counter = {
         successCounter: 0,
         failedCounter: 0
       }
 
-      
       for (let i = 0; i < data.length; i++) {
         const { userID, amount, description, day, month, year, location, category } = data[i]
         
@@ -183,10 +180,8 @@ const expenseController = {
             month: parseInt(month),
             year: parseInt(year)
           })
-
           counter.successCounter++
-        }catch(err){
-          console.log(err)
+        } catch(err){
           counter.failedCounter++
         }
       }
@@ -196,7 +191,6 @@ const expenseController = {
         metaData: counter
       })
     }
-
     fs.createReadStream('./csvFiles/expensesFile.csv')
       .pipe(csv())
       .on('data', (row) => {
@@ -206,7 +200,28 @@ const expenseController = {
         insertExpenseToDB(expenseList)
       });
   },
-  updateExpense: () => {},
+  updateExpense: async (req, res) => {
+    const { userID, amount, description, day, month, year, location, expenseID } = req.query
+    try{
+      const originalExpense = await Expense.findAll({ where: { expenseID: expenseID } });
+      const updateExpense = {
+          userID: userID ? userID : originalExpense[0].userID, 
+          amount: amount ? amount : originalExpense[0].amount, 
+          description: description ? description : originalExpense[0].description, 
+          day: day ? day : originalExpense[0].day, 
+          month: month ? month : originalExpense[0].month, 
+          year: year ? year : originalExpense[0].year, 
+          location: location ? location : originalExpense[0].location
+        }
+      await Expense.update(  
+        updateExpense,
+        { where: { expenseID: expenseID } }
+      )
+      res.send({ message: `Successfully updated Expense: #${expenseID}`})
+    }catch(err){
+      res.send({ err: `Unable to find Expense: #${expenseID}`})
+    }
+  },
   deleteExpense: async(req, res) => {
     const { expenseID } = req.query
     const expense = await Expense.destroy({
