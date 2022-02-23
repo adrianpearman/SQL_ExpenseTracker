@@ -25,24 +25,20 @@ const categoryController = {
   },
   bulkAddCategories: async (req, res) => {
     const categoryList = []
-
     const insertCategoryToDB = async (data) => {
       let counter = {
         successCounter: 0,
         failedCounter: 0
       }
-
       for (let i = 0; i < data.length; i++) {
         const { categoryName } = data[i]
-        
         try{
-          await Category.create({ categoryName: categoryName })
+          await Category.create({ categoryName })
           counter.successCounter++
         }catch(err){
           counter.failedCounter++
         }
       }
-
       res.send({
         message: `Successfully processed file. Successful: ${counter.successCounter}; Unsuccessful: ${counter.failedCounter}`,
         metaData: counter
@@ -62,9 +58,7 @@ const categoryController = {
   deleteCategory: async (req, res) => {
     const { categoryID } = req.query
     const category = await Category.destroy({
-      where: {
-        categoryID: categoryID
-      }
+      where: { categoryID: categoryID }
     })
 
     if(category !== 0){
