@@ -225,11 +225,8 @@ const expenseController = {
   deleteExpense: async(req, res) => {
     const { expenseID } = req.query
     const expense = await Expense.destroy({
-      where: {
-        expenseID: expenseID
-      }
+      where: { expenseID: expenseID }
     })
-
     if(expense !== 0){
       res.send({ message: `Successfully deleted ExpenseID: ${expenseID}` })
     } else{
