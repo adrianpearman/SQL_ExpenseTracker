@@ -1,6 +1,7 @@
 // NPM Modules
 const csv = require('csv-parser');
 const fs = require('fs');
+const { insertCategoryToDB, updatedCategory } = require('../utils')
 // DB Expense Model
 const Category = require('../models/categories')
 
@@ -12,11 +13,10 @@ const categoryController = {
     }catch(err){
       throw err
     }
-    
   },
   addCategory: async(req, res) => {
     const { categoryName } = req.query
-     try{
+    try{
       await Category.create({ categoryName })
       return res.send({message: "Successfully added Category"})
     }catch(err){
@@ -25,36 +25,29 @@ const categoryController = {
   },
   bulkAddCategories: async (req, res) => {
     const categoryList = []
-    const insertCategoryToDB = async (data) => {
-      let counter = {
-        successCounter: 0,
-        failedCounter: 0
-      }
-      for (let i = 0; i < data.length; i++) {
-        const { categoryName } = data[i]
-        try{
-          await Category.create({ categoryName })
-          counter.successCounter++
-        }catch(err){
-          counter.failedCounter++
-        }
-      }
-      res.send({
-        message: `Successfully processed file. Successful: ${counter.successCounter}; Unsuccessful: ${counter.failedCounter}`,
-        metaData: counter
-      })
-    }
-
     fs.createReadStream('./csvFiles/categoryFile.csv')
       .pipe(csv())
       .on('data', (row) => {
         categoryList.push(row)
       })
       .on('end', () => {
-        insertCategoryToDB(categoryList)
+        insertCategoryToDB(categoryList, res)
       });
   },
-  updateCategory: async (req, res) => {},
+  updateCategory: async (req, res) => {
+    const { categoryID } = req.query
+    try{
+      const originalCategory = await Category.findAll({ where: { categoryID: categoryID }})
+      const updatedCategoryData = updatedCategory(req.query, originalCategory)
+      await Category.update(  
+        updatedCategoryData,
+        { where: { categoryID: categoryID } }
+      )
+      res.send({ data: updatedCategory })
+    }catch(err){
+        res.send({ err: `Unable to find Category: #${categoryID}`})
+    }
+  },
   deleteCategory: async (req, res) => {
     const { categoryID } = req.query
     const category = await Category.destroy({

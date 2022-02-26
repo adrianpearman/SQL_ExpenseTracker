@@ -1,7 +1,7 @@
 // NPM Modules
 const csv = require('csv-parser');
 const fs = require('fs');
-const utils = require('../utils');
+const { insertExpenseToDB, reduceExpensesArray, updatedExpense } = require('../utils');
 // DB Expense Model
 const Expense = require('../models/expenses');
 // DB Category Model
@@ -69,7 +69,7 @@ const expenseController = {
       }
     }
 
-    const reducedArrayData = utils.reduceExpensesArray(expenses)
+    const reducedArrayData = reduceExpensesArray(expenses)
 
     returnedData.totalNumberOfExpenses = expenses.length
     returnedData.totalExpense = reducedArrayData
@@ -85,24 +85,21 @@ const expenseController = {
       res.send({ message: "No location provided, please enter a location"})
     }else{
       const expenses = await Expense.findAll({ where: {location} })
-
       if(expenses.length !== 0){
-        const reducedArrayData = utils.reduceExpensesArray(expenses)
+        const reducedArrayData = reduceExpensesArray(expenses)
         returnedData.expenses = expenses
         returnedData.totalNumberOfExpenses = expenses.length
         returnedData.location = location
         returnedData.totalExpense = reducedArrayData
         returnedData.averageTransaction = Number((reducedArrayData / expenses.length).toFixed(2))
-
         res.send(returnedData)
       }else{
-        const reducedArrayData = utils.reduceExpensesArray([])
+        const reducedArrayData = reduceExpensesArray([])
         returnedData.expenses = []
         returnedData.totalNumberOfExpenses = 0
         returnedData.location = location
         returnedData.totalExpense = reducedArrayData
         returnedData.averageTransaction = Number((reducedArrayData / expenses.length).toFixed(2))
-    
         res.send(returnedData)
       }
     }
@@ -113,7 +110,7 @@ const expenseController = {
 
     const categoryName = await Category.findAll({ where: { categoryID: category }})
     const expenses = await Expense.findAll({ where: { category: category }})
-    const reducedArrayData = utils.reduceExpensesArray(expenses)
+    const reducedArrayData = reduceExpensesArray(expenses)
 
     returnedData.category = categoryName[0].categoryName
     returnedData.expenses = expenses
@@ -160,61 +157,22 @@ const expenseController = {
   },
   bulkAddExpenses: async(req, res) => {
     const expenseList = []
-    const insertExpenseToDB = async (data) => {
-      let counter = {
-        successCounter: 0,
-        failedCounter: 0
-      }
-
-      for (let i = 0; i < data.length; i++) {
-        const { userID, amount, description, day, month, year, location, category } = data[i]
-        
-        try{
-          await Expense.create({ 
-            userID: userID,
-            amount: amount,
-            location: location,
-            category: category,
-            description: description,
-            day: parseInt(day),
-            month: parseInt(month),
-            year: parseInt(year)
-          })
-          counter.successCounter++
-        } catch(err){
-          counter.failedCounter++
-        }
-      }
-
-      res.send({
-        message: `Successfully processed file. Successful: ${counter.successCounter}; Unsuccessful: ${counter.failedCounter}`,
-        metaData: counter
-      })
-    }
     fs.createReadStream('./csvFiles/expensesFile.csv')
       .pipe(csv())
       .on('data', (row) => {
         expenseList.push(row)
       })
       .on('end', () => {
-        insertExpenseToDB(expenseList)
+        insertExpenseToDB(expenseList, res)
       });
   },
   updateExpense: async (req, res) => {
-    const { userID, amount, description, day, month, year, location, expenseID } = req.query
+    const { expenseID } = req.query
     try{
       const originalExpense = await Expense.findAll({ where: { expenseID: expenseID } });
-      const updateExpense = {
-          userID: userID ? userID : originalExpense[0].userID, 
-          amount: amount ? amount : originalExpense[0].amount, 
-          description: description ? description : originalExpense[0].description, 
-          day: day ? day : originalExpense[0].day, 
-          month: month ? month : originalExpense[0].month, 
-          year: year ? year : originalExpense[0].year, 
-          location: location ? location : originalExpense[0].location
-        }
+      const updatedExpenseData = updatedExpense(req.query, originalExpense)
       await Expense.update(  
-        updateExpense,
+        updatedExpenseData,
         { where: { expenseID: expenseID } }
       )
       res.send({ message: `Successfully updated Expense: #${expenseID}`})
