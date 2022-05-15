@@ -18,14 +18,14 @@ const expenseController = {
     res.send(returnedData)
   },
   getExpense: async(req, res) => {
-    const { expenseID } = req.query
+    const { expenseID } = req.body
     const expense = await Expense.findAll({ where: { expenseID: expenseID } });
     res.send(expense)
   },
   getExpensePerMonth: async (req, res) => {
     let totalExpenses = 0
     const returnedData = {}
-    const { month, year = new Date().getFullYear() } = req.query
+    const { month, year = new Date().getFullYear() } = req.body
 
     const expenses = await Expense.findAll({ 
       where: {
@@ -46,7 +46,7 @@ const expenseController = {
     res.send(returnedData)
   },
   getExpensePerYear: async (req, res) => {
-    const { year = new Date().getFullYear() } = req.query
+    const { year = new Date().getFullYear() } = req.body
     const returnedData = {}
 
     const expenses = await Expense.findAll({ where: { year } });
@@ -78,7 +78,7 @@ const expenseController = {
     res.send( returnedData )
   },
   getExpensePerLocation: async (req, res) => {
-    const { location } = req.query
+    const { location } = req.body
     const returnedData = {}
 
     if(!location){
@@ -105,7 +105,7 @@ const expenseController = {
     }
   },
   getExpensesPerCategory: async (req, res) => {
-    const { category } = req.query
+    const { category } = req.body
     const returnedData = {}
 
     const categoryName = await Category.findAll({ where: { categoryID: category }})
@@ -139,7 +139,7 @@ const expenseController = {
     res.send(returnedData)
   },
   addExpense: async (req, res) => {
-    const { userID, amount, description, day, month, year, location } = req.query
+    const { userID, amount, description, day, month, year, location } = req.body
     try{
       await Expense.create({ 
         userID: userID,
@@ -167,10 +167,10 @@ const expenseController = {
       });
   },
   updateExpense: async (req, res) => {
-    const { expenseID } = req.query
+    const { expenseID } = req.body
     try{
       const originalExpense = await Expense.findAll({ where: { expenseID: expenseID } });
-      const updatedExpenseData = updatedExpense(req.query, originalExpense)
+      const updatedExpenseData = updatedExpense(req.body, originalExpense)
       await Expense.update(  
         updatedExpenseData,
         { where: { expenseID: expenseID } }
@@ -181,7 +181,7 @@ const expenseController = {
     }
   },
   deleteExpense: async(req, res) => {
-    const { expenseID } = req.query
+    const { expenseID } = req.body
     const expense = await Expense.destroy({
       where: { expenseID: expenseID }
     })
@@ -196,7 +196,7 @@ const expenseController = {
     // API Key? 
     await Expense.drop()
     await Expense.sync({ force: true });
-    res.send({message: "Successfully Cleared Database"})
+    res.send({message: "Successfully Cleared Expense Database"})
   },
 }
 

@@ -65,7 +65,7 @@ const categoryController = {
     // API Key? 
     await Category.drop()
     await Category.sync({ force: true });
-    res.send({message: "Successfully Cleared Database"})
+    res.send({message: "Successfully Cleared Category Database"})
   }
 }
 
