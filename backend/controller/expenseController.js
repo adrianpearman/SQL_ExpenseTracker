@@ -1,7 +1,9 @@
 // NPM Modules
-const csv = require('csv-parser');
-const fs = require('fs');
-const { insertExpenseToDB, reduceExpensesArray, updatedExpense } = require('../utils');
+const { 
+  currencyConversion, 
+  reduceExpensesArray, 
+  updatedExpense 
+} = require('../utils');
 // DB Expense Model
 const Expense = require('../models/expenses');
 // DB Category Model
@@ -120,7 +122,7 @@ const expenseController = {
 
     res.send(returnedData)
   },
-  getAllLocations: async (req, res) => {
+  getAllExpenseLocations: async (req, res) => {
     const returnedData = {
       listOfLocations: [],
       location: {}
@@ -139,35 +141,42 @@ const expenseController = {
     res.send(returnedData)
   },
   addExpense: async (req, res) => {
-    const { userID, amount, description, day, month, year, location } = req.body
+    const { 
+      userID, 
+      amount, 
+      category, 
+      description, 
+      day, 
+      month, 
+      year, 
+      location,
+      currency = 'CAD'
+    } = req.body
+    
     try{
+      const convCurr = await currencyConversion(amount, day, month, year, currency)
+      
+      if(convCurr.status === "failed"){ throw new Error() }
+
       await Expense.create({ 
         userID: userID,
-        amount: amount,
+        amount: currency === 'CAD' ? amount : convCurr.amount,
+        currency: currency,
+        category: category,
         location: location,
         description: description,
         day: parseInt(day),
         month: parseInt(month),
         year: parseInt(year)
       })
-      return res.send({message: "Successfully added expense"})
+      return res.send({ message: "Successfully added expense" })
     }catch(err){
-      console.log(err)
+      return res.send({ messgage: errorMessage })
     }
-  },
-  bulkAddExpenses: async(req, res) => {
-    const expenseList = []
-    fs.createReadStream('./csvFiles/expensesFile.csv')
-      .pipe(csv())
-      .on('data', (row) => {
-        expenseList.push(row)
-      })
-      .on('end', () => {
-        insertExpenseToDB(expenseList, res)
-      });
   },
   updateExpense: async (req, res) => {
     const { expenseID } = req.body
+
     try{
       const originalExpense = await Expense.findAll({ where: { expenseID: expenseID } });
       const updatedExpenseData = updatedExpense(req.body, originalExpense)
@@ -180,7 +189,7 @@ const expenseController = {
       res.send({ err: `Unable to find Expense: #${expenseID}`})
     }
   },
-  deleteExpense: async(req, res) => {
+  deleteExpense: async (req, res) => {
     const { expenseID } = req.body
     const expense = await Expense.destroy({
       where: { expenseID: expenseID }
@@ -191,7 +200,7 @@ const expenseController = {
       res.send({ message: `No Expenses available with the ExpenseID of ${expenseID}` })  
     }
   },
-  deleteAllExpenses: async(req,res) => {
+  deleteAllExpenses: async (req, res) => {
     // Will need to add some logic to make this an admin function
     // API Key? 
     await Expense.drop()
