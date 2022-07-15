@@ -1,7 +1,7 @@
 module.exports = {
-  dbDatabaseName: "expense_tracker_dev_db",
-  dbUsername: "root",
-  dbPassword: "password",
-  dbHost: "localhost",
-  dbPort: "3306",
+  dbDatabaseName: process.env.dbDatabaseName,
+  dbUsername: process.env.dbUsername,
+  dbPassword: process.env.dbPassword,
+  dbHost: process.env.dbHost,
+  dbPort: process.env.dbPort,
 };
