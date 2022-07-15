@@ -1,4 +1,5 @@
 // NPM Modules
+require('dotenv').config();
 const bodyParser = require("body-parser")
 const cors = require("cors")
 const express = require("express")
@@ -9,6 +10,7 @@ const PORT = process.env.PORT || 3001
 const sequelize = require('../backend/database')
 
 // Routes
+const bulkActionRoutes = require("./routes/bulkActionRoutes")
 const categoryRoutes = require("./routes/categoryRoutes")
 const expenseRoutes = require("./routes/expenseRoutes")
 const userRoutes  = require('./routes/userRoutes')
@@ -19,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 // Importing Application Routes
+app.use(bulkActionRoutes)
 app.use(categoryRoutes)
 app.use(expenseRoutes)
 app.use(userRoutes)
@@ -28,9 +31,5 @@ sequelize.authenticate()
   .catch((err) => console.log(err))
 
 app.listen(PORT, error => {
-  if(error){
-    console.log(error)
-  } else{
-    console.log(`Running on PORT: ${PORT}`)
-  }
+  error ? console.log(error) : console.log(`Running on PORT: ${PORT}`)
 })
