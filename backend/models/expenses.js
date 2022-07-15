@@ -19,6 +19,10 @@ const Expense = db.define('Expense', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     },
+    currency:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     location:{
         type: DataTypes.STRING,
         allowNull: false
