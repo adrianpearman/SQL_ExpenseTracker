@@ -8,6 +8,7 @@ const {
   convertExpenseToCSV,
   insertExpenseToDB, 
   insertCategoryToDB,
+  queryExpenses,
   testFunction
 } = require('../utils');
 
@@ -32,8 +33,14 @@ const bulkActionController = {
     res.send({ message: "Completed" })
   },
   downloadExpensePerRange: async (req, res) => {
-    testFunction(beginning, end)
-    res.send({ message: "message"})
+    const { 
+      month = new Date().getMonth() + 1, 
+      year = new Date().getFullYear()
+    } = req.body
+
+    const t = await queryExpenses({ month, year })
+    
+    res.send(t)
   },
   downloadAllExpenseFile: async (req, res) => {
     const file = path.join(__dirname, '../../', 'csvFiles', 'expensesFile.csv')

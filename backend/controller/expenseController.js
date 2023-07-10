@@ -1,6 +1,7 @@
 // NPM Modules
 const { 
   currencyConversion, 
+  queryExpenses,
   reduceExpensesArray, 
   updatedExpense 
 } = require('../utils');
@@ -21,7 +22,7 @@ const expenseController = {
   },
   getExpense: async(req, res) => {
     const { expenseID } = req.body
-    const expense = await Expense.findAll({ where: { expenseID: expenseID } });
+    const expense = await queryExpenses({ expenseID: expenseID } );
     res.send(expense)
   },
   getExpensePerMonth: async (req, res) => {
@@ -29,12 +30,7 @@ const expenseController = {
     const returnedData = {}
     const { month, year = new Date().getFullYear() } = req.body
 
-    const expenses = await Expense.findAll({ 
-      where: {
-        month: month,
-        year: year
-      }
-    })
+    const expenses = await queryExpenses({ month, year })
 
     for (let i = 0; i < expenses.length; i++) {
       totalExpenses = totalExpenses + parseFloat(expenses[i].amount)
@@ -51,18 +47,18 @@ const expenseController = {
     const { year = new Date().getFullYear() } = req.body
     const returnedData = {}
 
-    const expenses = await Expense.findAll({ where: { year } });
+    const expenses = await queryExpenses({ year });
 
     for (let i = 0; i < expenses.length; i++) {
       const element = expenses[i];
 
-      if(returnedData[element.month] === undefined){
+      if( returnedData[element.month] === undefined ){
         returnedData[element.month] = {
           transactions: [Number(element.amount)],
           averages: element.amount,
           totalExpenses: 1
         }
-      } else{
+      } else {
         const expenseItem = returnedData[element.month]
         expenseItem.transactions.push(Number(element.amount))
         const averageTransaction = (expenseItem.transactions.reduce(function(a, b) { return a + b; }, 0)) / expenseItem.transactions.length
@@ -86,7 +82,7 @@ const expenseController = {
     if(!location){
       res.send({ message: "No location provided, please enter a location"})
     }else{
-      const expenses = await Expense.findAll({ where: {location} })
+      const expenses = await queryExpenses({ location })
       if(expenses.length !== 0){
         const reducedArrayData = reduceExpensesArray(expenses)
         returnedData.expenses = expenses
@@ -111,7 +107,7 @@ const expenseController = {
     const returnedData = {}
 
     const categoryName = await Category.findAll({ where: { categoryID: category }})
-    const expenses = await Expense.findAll({ where: { category: category }})
+    const expenses = await queryExpenses({ category })
     const reducedArrayData = reduceExpensesArray(expenses)
 
     returnedData.category = categoryName[0].categoryName
@@ -127,7 +123,7 @@ const expenseController = {
       listOfLocations: [],
       location: {}
     }
-    const expenses = await Expense.findAll()
+    const expenses = await queryExpenses({})
 
     for (let i = 0; i < expenses.length; i++) {
       if(returnedData.location[expenses[i].location] === undefined){

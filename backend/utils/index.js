@@ -126,6 +126,9 @@ const utils = {
     })
   },
   isEmpty: (value) => value ? value : "",
+  queryExpenses: async (date) => {
+    return await Expense.findAll({ where: date })
+  },
   reduceExpensesArray: (array) => {
     const data = []
     for (let i = 0; i < array.length; i++) {

@@ -11,7 +11,7 @@ const {
 
 // GET Requests
 router.get('/downloadExpenses', downloadAllExpenseFile)
-router.get('/downloadRangeOfExpense/:month/:year', downloadExpensePerRange)
+router.get('/downloadRangeOfExpense', downloadExpensePerRange)
 // POST Requests
 router.post('/bulkAddCategory', bulkAddToDB)
 router.post('/bulkAddExpense', bulkAddToDB)
