@@ -1,208 +1,442 @@
-// NPM Modules
-const { 
-  currencyConversion, 
-  queryExpenses,
-  reduceExpensesArray, 
-  updatedExpense 
-} = require('../utils');
-// DB Expense Model
-const Expense = require('../models/expenses');
-// DB Category Model
-const Category = require('../models/categories');
+// Utility Functions
+const {
+  convertMonth,
+  currencyConversion,
+  reduceExpensesArray,
+  updatedExpense,
+} = require("../utils");
+// DB Expense & Category Model
+const { Category, Expense, Location, User } = require("../models");
 
 const expenseController = {
   getAllExpenses: async (req, res) => {
-    const returnedData = {}
-    const totalExpenses = await Expense.findAll()
+    const { userUuid } = req.query;
+    try {
+      if (!userUuid) {
+        throw new Error("Please enter a valid user");
+      }
 
-    returnedData.totalExpenses = totalExpenses, 
-    returnedData.amountOfTransactions = totalExpenses.length
+      const user = await User.findOne({ where: { uuid: userUuid } });
 
-    res.send(returnedData)
+      const totalExpenses = await Expense.findAll({
+        where: { userId: user.dataValues.id },
+      });
+      res.send({
+        expenseData: {
+          amountOfTransactions: totalExpenses.length,
+          totalExpenses: totalExpenses,
+        },
+        message: "Successfully retrieved expenses",
+        success: true,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        expenseData: null,
+        message:
+          error.message || "An error has occured, unable to retrieve expenses",
+        success: false,
+      });
+    }
   },
-  getExpense: async(req, res) => {
-    const { expenseID } = req.body
-    const expense = await queryExpenses({ expenseID: expenseID } );
-    res.send(expense)
+  getExpense: async (req, res) => {
+    const { expenseUuid, userUuid } = req.query;
+    try {
+      if (!userUuid) {
+        throw new Error("Please enter a valid user");
+      }
+
+      const user = await User.findOne({ where: { uuid: userUuid } });
+
+      const expense = await Expense.findOne({
+        where: {
+          userId: user.dataValues.id,
+          uuid: expenseUuid,
+        },
+      });
+      res.send({
+        expenseData: expense,
+        message: "Successfuly returned expense",
+        success: true,
+      });
+    } catch (error) {
+      res.status(500).send({
+        expenseData: null,
+        message: "An error has occured, unable to return expense",
+        success: false,
+      });
+    }
   },
   getExpensePerMonth: async (req, res) => {
-    let totalExpenses = 0
-    const returnedData = {}
-    const { month, year = new Date().getFullYear() } = req.body
+    let totalExpenses = 0;
+    const returnedData = {};
+    const { month, userUuid, year = new Date().getFullYear() } = req.body;
+    try {
+      if (!userUuid) {
+        throw new Error("Please enter a valid user");
+      }
 
-    const expenses = await queryExpenses({ month, year })
+      const user = await User.findOne({ where: { uuid: userUuid } });
 
-    for (let i = 0; i < expenses.length; i++) {
-      totalExpenses = totalExpenses + parseFloat(expenses[i].amount)
+      const expenses = await Expense.findAll({
+        where: {
+          month,
+          userId: user.dataValues.id,
+          year,
+        },
+      });
+
+      for (let i = 0; i < expenses.length; i++) {
+        totalExpenses = totalExpenses + parseFloat(expenses[i].amount);
+      }
+
+      returnedData.totalExpenses = Number(totalExpenses.toFixed(2));
+      returnedData.amountOfTransactions = expenses.length;
+      returnedData.transactions = expenses;
+      returnedData.averageExpenditure = Number(
+        (totalExpenses / expenses.length).toFixed(2)
+      );
+
+      res.send({
+        expenseData: returnedData,
+        message: "Successfully returned expense data",
+        success: true,
+      });
+    } catch (error) {
+      res.status().send({
+        expenseData: null,
+        message: "An error has occured",
+        success: false,
+      });
     }
-
-    returnedData.totalExpenses = Number(totalExpenses.toFixed(2)), 
-    returnedData.amountOfTransactions = expenses.length,
-    returnedData.transactions = expenses,
-    returnedData.averageExpenditure = Number((totalExpenses / expenses.length).toFixed(2))
-      
-    res.send(returnedData)
   },
   getExpensePerYear: async (req, res) => {
-    const { year = new Date().getFullYear() } = req.body
-    const returnedData = {}
+    const { userUuid, year = new Date().getFullYear() } = req.query;
+    const returnedData = {};
 
-    const expenses = await queryExpenses({ year });
-
-    for (let i = 0; i < expenses.length; i++) {
-      const element = expenses[i];
-
-      if( returnedData[element.month] === undefined ){
-        returnedData[element.month] = {
-          transactions: [Number(element.amount)],
-          averages: element.amount,
-          totalExpenses: 1
-        }
-      } else {
-        const expenseItem = returnedData[element.month]
-        expenseItem.transactions.push(Number(element.amount))
-        const averageTransaction = (expenseItem.transactions.reduce(function(a, b) { return a + b; }, 0)) / expenseItem.transactions.length
-        expenseItem.averages = Number(averageTransaction.toFixed(2))
-        expenseItem.totalExpenses++
+    try {
+      if (!userUuid) {
+        throw new Error("Please enter a valid user");
       }
+
+      const user = await User.findOne({ where: { uuid: userUuid } });
+
+      const expenses = await Expense.findAll({
+        where: {
+          userId: user.dataValues.id,
+          year,
+        },
+      });
+
+      for (let i = 0; i < expenses.length; i++) {
+        const element = expenses[i];
+        const month = convertMonth(element.month);
+
+        if (returnedData[month] === undefined) {
+          returnedData[month] = {
+            transactions: [Number(element.amount)],
+            averages: element.amount,
+            totalExpenses: 1,
+          };
+        } else {
+          const expenseItem = returnedData[month];
+          expenseItem.transactions.push(Number(element.amount));
+          const averageTransaction =
+            expenseItem.transactions.reduce(function (a, b) {
+              return a + b;
+            }, 0) / expenseItem.transactions.length;
+          expenseItem.averages = Number(averageTransaction.toFixed(2));
+          expenseItem.totalExpenses++;
+        }
+      }
+
+      const reducedArrayData = reduceExpensesArray(expenses);
+
+      returnedData.totalNumberOfExpenses = expenses.length;
+      returnedData.totalExpense = reducedArrayData;
+      returnedData.averageTransaction = Number(
+        (reducedArrayData / expenses.length).toFixed(2)
+      );
+
+      res.send({
+        expenseData: returnedData,
+        message: "Successfully returned expense data",
+        success: true,
+      });
+    } catch (error) {
+      res.status(500).send({
+        expenseData: null,
+        message: "An error has occured, unable to return expense",
+        success: false,
+      });
     }
-
-    const reducedArrayData = reduceExpensesArray(expenses)
-
-    returnedData.totalNumberOfExpenses = expenses.length
-    returnedData.totalExpense = reducedArrayData
-    returnedData.averageTransaction = Number((reducedArrayData / expenses.length).toFixed(2))
-
-    res.send( returnedData )
   },
   getExpensePerLocation: async (req, res) => {
-    const { location } = req.body
-    const returnedData = {}
+    const { locationId, userUuid } = req.query;
+    const returnedData = {};
 
-    if(!location){
-      res.send({ message: "No location provided, please enter a location"})
-    }else{
-      const expenses = await queryExpenses({ location })
-      if(expenses.length !== 0){
-        const reducedArrayData = reduceExpensesArray(expenses)
-        returnedData.expenses = expenses
-        returnedData.totalNumberOfExpenses = expenses.length
-        returnedData.location = location
-        returnedData.totalExpense = reducedArrayData
-        returnedData.averageTransaction = Number((reducedArrayData / expenses.length).toFixed(2))
-        res.send(returnedData)
-      }else{
-        const reducedArrayData = reduceExpensesArray([])
-        returnedData.expenses = []
-        returnedData.totalNumberOfExpenses = 0
-        returnedData.location = location
-        returnedData.totalExpense = reducedArrayData
-        returnedData.averageTransaction = Number((reducedArrayData / expenses.length).toFixed(2))
-        res.send(returnedData)
+    try {
+      if (!locationId) {
+        throw new Error("Please enter a valid location");
+      } else if (!userUuid) {
+        throw new Error("Please enter a valid user");
       }
+
+      const user = await User.findOne({ where: { uuid: userUuid } });
+
+      const location = await Location.findOne({
+        where: {
+          id: locationId,
+        },
+        include: {
+          as: "expenses",
+          model: Expense,
+          where: { userId: user.dataValues.id },
+        },
+      });
+
+      const expenses = location.dataValues.expenses;
+
+      if (expenses.length !== 0) {
+        const formattedArray = expenses.map((exp) => exp.dataValues);
+        const reducedArrayData = reduceExpensesArray(formattedArray);
+        returnedData.expenses = expenses;
+        returnedData.totalNumberOfExpenses = expenses.length;
+        returnedData.location = location.location;
+        returnedData.totalExpense = reducedArrayData;
+        returnedData.averageTransaction = Number(
+          (reducedArrayData / expenses.length).toFixed(2)
+        );
+      } else {
+        const reducedArrayData = reduceExpensesArray([]);
+        returnedData.expenses = [];
+        returnedData.totalNumberOfExpenses = 0;
+        returnedData.location = location.location;
+        returnedData.totalExpense = reducedArrayData;
+        returnedData.averageTransaction = Number(
+          (reducedArrayData / expenses.length).toFixed(2)
+        );
+      }
+
+      res.json({
+        expenseData: returnedData,
+        message: "Successfully returned expenseData",
+        success: true,
+      });
+    } catch (error) {
+      res.status(500).send({
+        expenseData: null,
+        message: `An error has occured: ${error.message}`,
+        success: false,
+      });
     }
   },
   getExpensesPerCategory: async (req, res) => {
-    const { category } = req.body
-    const returnedData = {}
+    const { categoryId, userUuid } = req.query;
+    const returnedData = {};
 
-    const categoryName = await Category.findAll({ where: { categoryID: category }})
-    const expenses = await queryExpenses({ category })
-    const reducedArrayData = reduceExpensesArray(expenses)
+    try {
+      if (!userUuid) {
+        throw new Error("Please enter a valid user");
+      }
 
-    returnedData.category = categoryName[0].categoryName
-    returnedData.expenses = expenses
-    returnedData.totalNumberOfExpenses = expenses.length
-    returnedData.totalExpense = reducedArrayData
-    returnedData.averageTransaction = Number((reducedArrayData / expenses.length).toFixed(2))
+      const user = await User.findOne({ where: { uuid: userUuid } });
 
-    res.send(returnedData)
-  },
-  getAllExpenseLocations: async (req, res) => {
-    const returnedData = {
-      listOfLocations: [],
-      location: {}
+      const category = await Category.findOne({
+        where: { id: categoryId },
+        include: {
+          as: "expenses",
+          model: Expense,
+          where: {
+            userId: user.dataValues.id,
+          },
+        },
+      });
+
+      const expenses = category.dataValues.expenses.map(
+        (exp) => exp.dataValues
+      );
+
+      const reducedArrayData = reduceExpensesArray(expenses);
+
+      returnedData.category = category.dataValues.categoryName;
+      returnedData.expenses = expenses;
+      returnedData.totalNumberOfExpenses = expenses.length;
+      returnedData.totalExpense = reducedArrayData;
+      returnedData.averageTransaction = Number(
+        (reducedArrayData / expenses.length).toFixed(2)
+      );
+
+      res.send({
+        expenseData: returnedData,
+        message: "Successfully returned expenseData",
+        success: true,
+      });
+    } catch (error) {
+      res.status(500).send({
+        expenseData: null,
+        message:
+          error.message || "An error has occured, unable to retrieve category",
+        success: false,
+      });
     }
-    const expenses = await queryExpenses({})
-
-    for (let i = 0; i < expenses.length; i++) {
-      if(returnedData.location[expenses[i].location] === undefined){
-        returnedData.listOfLocations.push(expenses[i].location)
-        returnedData.location[expenses[i].location] = 1
-      } else{
-        returnedData.location[expenses[i].location]++
-      }      
-    }
-
-    res.send(returnedData)
   },
   addExpense: async (req, res) => {
-    const { 
-      userID, 
-      amount, 
-      category, 
-      description, 
-      day, 
-      month, 
-      year, 
+    const {
+      userUuid,
+      amount,
+      category,
+      currency = "CAD",
+      description,
+      day,
       location,
-      currency = 'CAD'
-    } = req.body
-    
-    try{
-      const convCurr = await currencyConversion(amount, day, month, year, currency)
-      
-      if(convCurr.status === "failed"){ throw new Error() }
+      month,
+      year,
+    } = req.body;
 
-      await Expense.create({ 
-        userID: userID,
-        amount: currency === 'CAD' ? amount : convCurr.amount,
+    try {
+      const convCurr = await currencyConversion(
+        amount,
+        currency,
+        day,
+        month,
+        year
+      );
+
+      if (convCurr.status === "failed") {
+        throw new Error("Error occured at currency conversion");
+      }
+
+      const locationFromDB = await Location.findOne({
+        where: { location: location },
+      });
+
+      const user = await User.findOne({ where: { uuid: userUuid } });
+
+      let locationId;
+
+      if (locationFromDB === null) {
+        const newLocation = await Location.create({
+          location: location,
+        });
+        locationId = newLocation.dataValues.id;
+      } else {
+        locationId = locationFromDB.dataValues.id;
+      }
+
+      const expense = await Expense.create({
+        userId: user.dataValues.id,
+        amount: currency === "CAD" ? amount : convCurr.amount,
+        categoryId: parseInt(category),
         currency: currency,
-        category: category,
-        location: location,
-        description: description,
         day: parseInt(day),
+        description: description,
+        locationId: locationId,
         month: parseInt(month),
-        year: parseInt(year)
-      })
-      return res.send({ message: "Successfully added expense" })
-    }catch(err){
-      return res.send({ messgage: errorMessage })
-    }
-  },
-  updateExpense: async (req, res) => {
-    const { expenseID } = req.body
+        year: parseInt(year),
+      });
 
-    try{
-      const originalExpense = await Expense.findAll({ where: { expenseID: expenseID } });
-      const updatedExpenseData = updatedExpense(req.body, originalExpense)
-      await Expense.update(  
-        updatedExpenseData,
-        { where: { expenseID: expenseID } }
-      )
-      res.send({ message: `Successfully updated Expense: #${expenseID}`})
-    }catch(err){
-      res.send({ err: `Unable to find Expense: #${expenseID}`})
+      return res.send({
+        expense: expense,
+        message: "Successfully added expense",
+        success: true,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send({
+        expense: expense,
+        message: err,
+        success: false,
+      });
     }
   },
+
+  // todo revise options for updating
+  updateExpense: async (req, res) => {
+    const { expenseID } = req.body;
+
+    try {
+      const originalExpense = await Expense.findAll({
+        where: { expenseID: expenseID },
+      });
+
+      const updatedExpenseData = updatedExpense(req.body, originalExpense);
+
+      await Expense.update(updatedExpenseData, {
+        where: { expenseID: expenseID },
+      });
+      res.send({ message: `Successfully updated Expense: #${expenseID}` });
+    } catch (err) {
+      res.send({ err: `Unable to find Expense: #${expenseID}` });
+    }
+  },
+  // todo
+
   deleteExpense: async (req, res) => {
-    const { expenseID } = req.body
-    const expense = await Expense.destroy({
-      where: { expenseID: expenseID }
-    })
-    if(expense !== 0){
-      res.send({ message: `Successfully deleted ExpenseID: ${expenseID}` })
-    } else{
-      res.send({ message: `No Expenses available with the ExpenseID of ${expenseID}` })  
+    const { expenseUuid, userUuid } = req.query;
+
+    try {
+      if (!userUuid) {
+        throw new Error("User is invalid, please enter a user");
+      }
+
+      const user = await User.findOne({
+        where: { uuid: userUuid },
+      });
+
+      const expense = await Expense.destroy({
+        where: {
+          userId: user.dataValues.id,
+          uuid: expenseUuid,
+        },
+      });
+
+      res.send({
+        expenseData: expense,
+        message: `Successfully deleted ExpenseID: ${expenseUuid}`,
+        success: true,
+      });
+    } catch (error) {
+      res.status(500).send({
+        expenseData: null,
+        message:
+          error.message ||
+          `An error has occured, unable to delete Expense: ${expenseUuid}`,
+        success: false,
+      });
     }
   },
   deleteAllExpenses: async (req, res) => {
-    // Will need to add some logic to make this an admin function
-    // API Key? 
-    await Expense.drop()
-    await Expense.sync({ force: true });
-    res.send({message: "Successfully Cleared Expense Database"})
-  },
-}
+    const { userUuid } = req.query;
 
-module.exports = expenseController
+    try {
+      if (!userUuid) {
+        throw new Error("User is invalid, please enter a user");
+      }
+
+      const user = await User.findOne({
+        where: { uuid: userUuid },
+      });
+
+      // Will need to add some logic to make this an admin function
+      // API Key?
+      await Expense.destroy({
+        where: {
+          userId: user.dataValues.id,
+        },
+      });
+
+      res.send({
+        message: `Successfully Cleared Expense Database for User: ${user.dataValues.id}`,
+        success: true,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: error.message || "An error has occured",
+        success: false,
+      });
+    }
+  },
+};
+
+module.exports = expenseController;

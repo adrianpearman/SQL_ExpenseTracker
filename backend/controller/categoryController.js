@@ -1,59 +1,139 @@
 // NPM Modules
-const { updatedCategory } = require('../utils')
+const { isAdminUser, updatedCategory } = require("../utils");
 // DB Expense Model
-const Category = require('../models/categories')
+const { Category } = require("../models");
 
 const categoryController = {
-  addCategory: async(req, res) => {
-    const { categoryName } = req.body
-    try{
-      await Category.create({ categoryName: categoryName })
-      return res.send({message: "Successfully added Category"})
-    }catch(err){
-      res.send({error: err})
+  addCategory: async (req, res) => {
+    const { categoryName, userUuid } = req.body;
+    try {
+      if (!categoryName) {
+        throw new Error("Missing ctaegory name, please enter a category");
+      } else if (!userUuid) {
+        throw new Error("Unauthorized, missing user details");
+      }
+
+      if (!(await isAdminUser(userUuid))) {
+        throw new Error("Unauthorized, invalid role access level");
+      }
+
+      const category = await Category.create({ categoryName: categoryName });
+
+      return res.send({
+        category: category,
+        message: "Successfully added category",
+        success: true,
+      });
+    } catch (error) {
+      res.status(500).send({
+        category: null,
+        message: error.message,
+        success: false,
+      });
     }
   },
   deleteCategory: async (req, res) => {
-    const { categoryID } = req.body
-    const category = await Category.destroy({
-      where: { categoryID: categoryID }
-    })
+    const { categoryId, userUuid } = req.body;
 
-    if(category !== 0){
-      res.send({ message: `Successfully deleted ExpenseID: ${categoryID}` })
-    } else{
-      res.send({ message: `No Category available with the ExpenseID of ${categoryID}` })  
+    try {
+      if (!userUuid) {
+        throw new Error("Unauthorized, missing user details");
+      }
+
+      if (!(await isAdminUser(userUuid))) {
+        throw new Error("Unauthorized, invalid role access level");
+      }
+
+      const category = await Category.destroy({
+        where: { categoryId: categoryId },
+      });
+
+      if (category !== 0) {
+        res.send({
+          message: `Successfully deleted ExpenseID: ${categoryId}`,
+          success: true,
+        });
+      } else {
+        throw new Error(
+          `No Category available with the ExpenseID of ${categoryId}`
+        );
+      }
+    } catch (error) {
+      res.status(500).send({
+        message: error.message || "An error has occured, try again later",
+        success: false,
+      });
     }
   },
   deleteAllCategories: async (req, res) => {
-    // Will need to add some logic to make this an admin function
-    // API Key? 
-    await Category.drop()
-    await Category.sync({ force: true });
-    res.send({message: "Successfully Cleared Category Database"})
+    try {
+      // Will need to add some logic to make this an admin function
+      // API Key?
+      await Category.drop();
+      await Category.sync({ force: true });
+      res.send({
+        message: "Successfully Cleared Category Database",
+        success: true,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: error.message || "An error has occured",
+        success: false,
+      });
+    }
   },
-  getAllCategories: async(req, res) => {
-    try{
-      const values = await Category.findAll({})
-      res.send({ categories: values })
-    }catch(err){
-      throw err
+  getAllCategories: async (req, res) => {
+    try {
+      const values = await Category.findAll({});
+      res.send({
+        categories: values,
+        message: "Successfully retrieved categories",
+        success: true,
+      });
+    } catch (err) {
+      res.status(500).send({
+        category: null,
+        message: error,
+        success: false,
+      });
     }
   },
   updateCategory: async (req, res) => {
-    const { categoryID } = req.body
-    try{
-      const originalCategory = await Category.findAll({ where: { categoryID: categoryID }})
-      const updatedCategoryData = updatedCategory(req.body, originalCategory)
-      await Category.update(  
-        updatedCategoryData,
-        { where: { categoryID: categoryID } }
-      )
-      res.send({ data: updatedCategory })
-    }catch(err){
-        res.send({ err: `Unable to find Category: #${categoryID}`})
+    const { categoryId, userUuid } = req.body;
+    try {
+      if (!categoryId) {
+        throw new Error("Missing ctaegory name, please enter a category");
+      } else if (!userUuid) {
+        throw new Error("Unauthorized, missing user details");
+      }
+
+      if (!(await isAdminUser(userUuid))) {
+        throw new Error("Unauthorized, invalid role access level");
+      }
+
+      const originalCategory = await Category.findAll({
+        where: { categoryId: categoryId },
+      });
+
+      const updatedCategoryData = await Category.update(
+        updatedCategory(req.body, originalCategory),
+        {
+          where: { categoryId: categoryId },
+        }
+      );
+      res.send({
+        category: updatedCategoryData,
+        message: `Successfully updated Category: #${categoryId}`,
+        success: true,
+      });
+    } catch (err) {
+      res.status(500).send({
+        category: null,
+        message: `Unable to find Category: #${categoryId}`,
+        success: false,
+      });
     }
   },
-}
+};
 
-module.exports = categoryController
+module.exports = categoryController;
