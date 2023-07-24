@@ -1,13 +1,14 @@
-const express = require('express')
-const userController = require('../controller/userController')
-const router = express.Router({ mergeParams: true })
+const express = require("express");
+const userController = require("../controller/userController");
+const router = express.Router({ mergeParams: true });
 
 // GET
-router.get('/getUser', userController.getUser)
+router.get("/api/getUser", userController.getUser);
 // POST
+router.post("/api/createUser", userController.createUser);
 // UPDATE
 // DELETE
-router.delete('/deleteAllUsers', userController.deleteUsers)
-router.delete('/resetDatabase', userController.resetDatabase)
+router.delete("/api/deleteAllUsers", userController.deleteUsers);
+router.delete("/api/resetDatabase", userController.resetDatabase);
 
-module.exports = router
+module.exports = router;

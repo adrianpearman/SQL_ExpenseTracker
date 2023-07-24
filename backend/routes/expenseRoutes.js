@@ -1,7 +1,7 @@
 // NPM Modules
-const express = require('express');
+const express = require("express");
 const router = express.Router({ mergeParams: true });
-// Expense Controller 
+// Expense Controller
 const {
   addExpense,
   deleteExpense,
@@ -14,22 +14,21 @@ const {
   getExpensePerMonth,
   getExpensePerYear,
   updateExpense,
-} = require('../controller/expenseController')
+} = require("../controller/expenseController");
 
 // GET Requests
-router.get('/', getAllExpenses)
-router.get('/getExpense', getExpense)
-router.get('/getExpensePerMonth', getExpensePerMonth)
-router.get('/getExpensePerYear', getExpensePerYear)
-router.get('/getExpensesPerCategory', getExpensesPerCategory)
-router.get('/getExpensesPerLocation', getExpensePerLocation)
-router.get('/getLocations', getAllExpenseLocations)
+router.get("/api/expenses", getAllExpenses);
+router.get("/api/getExpense", getExpense);
+router.get("/api/getExpensePerMonth", getExpensePerMonth);
+router.get("/api/getExpensePerYear", getExpensePerYear);
+router.get("/api/getExpensesPerCategory", getExpensesPerCategory);
+router.get("/api/getExpensesPerLocation", getExpensePerLocation);
 // POST Requests
-router.post('/addExpense', addExpense)
+router.post("/api/addExpense", addExpense);
 // UPDATE Requests
-router.patch('/updateExpense', updateExpense)
+router.patch("/api/updateExpense", updateExpense);
 // DELETE Requests
-router.delete('/deleteExpense', deleteExpense)
-router.delete('/deleteAllExpenses', deleteAllExpenses)
+router.delete("/api/deleteExpense", deleteExpense);
+router.delete("/api/deleteAllExpenses", deleteAllExpenses);
 
-module.exports = router 
+module.exports = router;
